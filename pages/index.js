@@ -1,65 +1,90 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import { colors } from "../styles/theme";
+import { loginWithGitHub } from "../firebase/client";
+import { useEffect } from "react";
+import Avatar from "../comoponents/Avatar/index";
+import Button from "../comoponents/Button/index";
+import GitHub from "../comoponents/Icons/Github.js";
+import Spinner from "../comoponents/Spinner/index";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import useUser, { USER_STATES } from "../hooks/useUser";
 
 export default function Home() {
+  const router = useRouter();
+
+  const user = useUser();
+
+  useEffect(() => {
+    user && router.replace("/home");
+  }, [user]);
+
+  const handleClick = () => {
+    loginWithGitHub()
+      .then((user) => {
+        // const { avatar, username, url } = user;
+        setUser(user);
+        console.log(user);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
-    <div className={styles.container}>
+    <>
       <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Twity</title>
+        <link rel="icon" href="/Untitled-1.png" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <section>
+        <img src="/Untitled-1.png" width="100px" alt="logo" />
+        <h1>Twity</h1>
+        <h2>Developers Social Media</h2>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+        <div className="">
+          {user === USER_STATES.NOT_LOGGED && (
+            <Button onClick={handleClick}>
+              Login with GitHub <GitHub fill="white" />{" "}
+            </Button>
+          )}
+          {user && user.avatar && (
+            <Avatar
+              src={user.avatar}
+              alt={user.username}
+              userName={user.username}
+              email={user.email}
+            />
+          )}
+          {user == undefined && <Spinner />}
         </div>
-      </main>
+      </section>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+      <style jsx>
+        {`
+          div {
+            margin-top: 16px;
+          }
+          h1 {
+            color: ${colors.primary};
+            font-size: 24px;
+            font-weight: 800px;
+            margin-bottom: 16px;
+          }
+          h2 {
+            margin: 0;
+            font-size: 16px;
+            color: ${colors.secondary};
+          }
+
+          section {
+            display: grid;
+            height: 100%;
+            place-content: center;
+            place-items: center;
+          }
+        `}
+      </style>
+    </>
+  );
 }

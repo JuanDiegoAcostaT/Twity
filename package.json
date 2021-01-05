@@ -5,11 +5,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "npx eslint . --fix"
   },
   "dependencies": {
+    "firebase": "7.24.0",
+    "firebase-admin": "9.4.2",
     "next": "9.5.2",
+    "nextjs": "0.0.3",
     "react": "16.13.1",
     "react-dom": "16.13.1"
-  }
+  },
+  "devDependencies": {}
 }
